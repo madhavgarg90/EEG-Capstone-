@@ -2,7 +2,7 @@
 
 A sleek, full-featured Pomodoro Timer app that **personalizes session durations** based on your focus history — powered by React, Tailwind CSS (via ShadCN UI), and a FastAPI + Python backend for intelligent predictions.
 
-![Light Mode Screenshot](images/Screenshot%202025-07-15%20154318.png)
+![Light Mode Screenshot](Pomodoro-main/images/Screenshot%202025-07-15%20154318.png)
 
 ---
 
@@ -31,21 +31,21 @@ Login & Signup screens with theme support
 
 | Login Page | Signup Page |
 |------------|-------------|
-| ![Login](images/Screenshot%202025-07-15%20154405.png) | ![Signup](images/Screenshot%202025-07-15%20154416.png) |
+| ![Login](Pomodoro-main/images/Screenshot%202025-07-15%20154405.png) | ![Signup](Pomodoro-main/images/Screenshot%202025-07-15%20154416.png) |
 
 ---
 
 ### 🧭 Timer Modes
 | Focus Mode | Short Break | Long Break |
 |------------|-------------|------------|
-| ![Focus](images/Screenshot%202025-07-15%20154239.png) | ![Short Break](images/Screenshot%202025-07-15%20154247.png) | ![Long Break](images/Screenshot%202025-07-15%20154256.png) |
+| ![Focus](Pomodoro-main/images/Screenshot%202025-07-15%20154239.png) | ![Short Break](Pomodoro-main/images/Screenshot%202025-07-15%20154247.png) | ![Long Break](Pomodoro-main/images/Screenshot%202025-07-15%20154256.png) |
 
 ---
 
 ### ⚙️ Settings + Analytics
 | Settings Page | Analytics View |
 |---------------|----------------|
-| ![Settings](images/Screenshot%202025-07-15%20154352.png) | ![Analytics](images/Screenshot%202025-07-15%20154224.png) |
+| ![Settings](Pomodoro-main/images/Screenshot%202025-07-15%20154352.png) | ![Analytics](Pomodoro-main/images/Screenshot%202025-07-15%20154224.png) |
 
 ---
 
