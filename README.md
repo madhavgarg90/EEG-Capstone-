@@ -95,27 +95,31 @@ Key highlights:
 
 ## 📦 Setup Instructions
 
-### Frontend
-
 ```bash
+# Clone the repository
 git clone https://github.com/YOUR-USERNAME/Pomodoro.git
 cd Pomodoro
+
+# ▶️ Frontend Setup
 pnpm install
 pnpm dev
 
-
+# ▶️ Backend (Node.js) Setup
 cd backend
 pnpm install
 pnpm dev
 
-cd eeg-api
+# ▶️ EEG API (Python + FastAPI) Setup
+cd ../eeg-api
 python -m venv venv
 
-# Windows
+# Activate virtual environment
+# Windows:
 .\venv\Scripts\activate
-
-# macOS/Linux
+# macOS/Linux:
 source venv/bin/activate
 
+# Install Python dependencies and run API
 pip install -r requirements.txt
 uvicorn app.main:app --reload
+
