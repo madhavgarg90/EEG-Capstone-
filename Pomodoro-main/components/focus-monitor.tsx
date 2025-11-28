@@ -12,6 +12,7 @@ import {
   DEFAULT_FOCUS_CONFIG,
   fetchFocusFromAPI,
 } from "@/lib/focus-config";
+import { useTimer } from "@/lib/timer-context";
 
 interface FocusMonitorProps {
   /** Configuration object (optional, uses defaults if not provided) */
@@ -30,6 +31,8 @@ export default function FocusMonitor({
   onFocusChange,
   onMonitoringStateChange,
 }: FocusMonitorProps) {
+  const { isTimerActive, triggerFocusUpdate } = useTimer();
+
   // Merge provided config with defaults
   const finalConfig: FocusMonitorConfig = {
     ...DEFAULT_FOCUS_CONFIG,
@@ -121,6 +124,19 @@ export default function FocusMonitor({
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    
+    // Send focus percentage to timer when pausing
+    if (focusData.length > 0) {
+      const focusPercentage = Math.round(
+        (focusData.filter((d) => d.focus === 1).length / focusData.length) * 100
+      );
+      triggerFocusUpdate(focusPercentage);
+    }
+  };
+
+  // Stop monitoring (called by timer context)
+  const handleStop = () => {
+    handlePause();
   };
 
   // Reset monitoring
@@ -144,6 +160,15 @@ export default function FocusMonitor({
       }
     };
   }, [isMonitoring, finalConfig.updateInterval]);
+
+  // Add this effect to sync with timer
+  useEffect(() => {
+    if (isTimerActive && !isMonitoring) {
+      handleStart();
+    } else if (!isTimerActive && isMonitoring) {
+      handleStop();
+    }
+  }, [isTimerActive]);
 
   // Calculate focus statistics
   const focusStats = {

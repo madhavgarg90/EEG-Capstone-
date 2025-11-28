@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { useTimer } from "@/lib/timer-context";
+import { useToast } from "@/hooks/use-toast";
 import {
   // fetchAllSessions is no longer needed for adjustment logic, only for initial load (removed from this file for clarity)
   fetchUserDetails,
@@ -21,7 +23,9 @@ type TimerMode = "pomodoro" | "shortBreak" | "longBreak";
 
 export default function PomodoroTimer() {
   const { theme, resolvedTheme } = useTheme();
-  const { user } = useAuth(); // Custom hook for authentication
+  const { user } = useAuth();
+  const { setIsTimerActive, registerFocusCallback } = useTimer();
+  const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -33,6 +37,7 @@ export default function PomodoroTimer() {
 
   // Durations, now dynamically adjusted
   const [focusDuration, setFocusDuration] = useState(25);
+  const [baselineFocusDuration] = useState(25); // Default baseline
   const [shortBreak, setShortBreak] = useState(5);
   const [longBreak, setLongBreak] = useState(15);
 
@@ -267,8 +272,66 @@ export default function PomodoroTimer() {
     );
   };
 
+  // Adjust timer based on focus percentage
+  const adjustTimerBasedOnFocus = useCallback((focusPercentage: number) => {
+    let newDuration = focusDuration;
+    let message = "";
+
+    if (focusPercentage > 66) {
+      // Good focus - reduce timer by 10%
+      newDuration = Math.max(15, focusDuration * 0.9);
+      message = `Great focus! (${focusPercentage}%) Timer reduced to ${Math.round(newDuration)} minutes.`;
+    } else if (focusPercentage >= 33) {
+      // Medium focus - keep timer the same
+      message = `Good effort! (${focusPercentage}%) Timer remains at ${Math.round(focusDuration)} minutes.`;
+      return; // No change needed
+    } else {
+      // Poor focus - increase timer by 1 minute
+      newDuration = Math.min(35, focusDuration + 1);
+      message = `Need more focus! (${focusPercentage}%) Timer increased to ${Math.round(newDuration)} minutes.`;
+    }
+
+    setFocusDuration(newDuration);
+
+    // Recalculate breaks proportionally
+    const newShort = Math.round((newDuration / 5) * 100) / 100;
+    const newLong = Math.round((newDuration * 3 / 5) * 100) / 100;
+    setShortBreak(newShort);
+    setLongBreak(newLong);
+
+    // Show toast notification
+    toast({
+      title: "Timer Adjusted",
+      description: message,
+      duration: 5000,
+    });
+
+    // Save to user preferences
+    if (user) {
+      updateUserProfile({
+        name: user.name!,
+        email: user.email,
+        preferences: {
+          ...preferencesRef.current,
+          focusDuration: newDuration,
+          shortBreakDuration: newShort,
+          longBreakDuration: newLong,
+        },
+      }).catch(err => console.error("Failed to update preferences", err));
+    }
+  }, [focusDuration, toast, user]);
+
+  // Register the callback when component mounts
+  useEffect(() => {
+    registerFocusCallback(adjustTimerBasedOnFocus);
+  }, [registerFocusCallback, adjustTimerBasedOnFocus]);
+
   // Toggles the timer's active state (play/pause)
-  const toggleTimer = () => setIsActive((prev) => !prev);
+  const toggleTimer = () => {
+    const newState = !isActive;
+    setIsActive(newState);
+    setIsTimerActive(newState);
+  };
 
   // Resets the timer to its current mode's full duration and stops it
   const resetTimer = () => {
