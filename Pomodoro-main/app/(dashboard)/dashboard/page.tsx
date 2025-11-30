@@ -30,7 +30,7 @@ export default function DashboardPage() {
           <Card className="border-2">
             <CardHeader className="text-center">
               <CardTitle>Focus Monitor</CardTitle>
-              <CardDescription>Track your focus levels in real-time</CardDescription>
+              <CardDescription>Real-time focus prediction using EEG data</CardDescription>
             </CardHeader>
             <CardContent>
               <FocusMonitor config={PRESET_DEMO} />

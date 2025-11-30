@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { loginUser, signupUser } from "@/lib/api"
+// import { loginUser, signupUser } from "@/lib/api"
 
 type Preferences = {
   notifications: boolean
@@ -51,41 +51,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string) => {
-  try {
-    const res = await loginUser({ email, password })
+    // Commented out the old logic
+    /*
+    try {
+      const res = await loginUser({ email, password })
 
-    if (res.success) {
-      localStorage.setItem("token", res.authToken)
+      if (res.success) {
+        localStorage.setItem("token", res.authToken)
 
-      // Fetch full user info using /getuser
-      const userRes = await fetch("http://localhost:5000/api/auth/getuser", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": res.authToken,
-        },
-      })
+        // Fetch full user info using /getuser
+        const userRes = await fetch("http://localhost:5000/api/auth/getuser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "auth-token": res.authToken,
+          },
+        })
 
-      const userData = await userRes.json()
+        const userData = await userRes.json()
 
-      if (!userRes.ok) throw new Error("Failed to fetch user")
+        if (!userRes.ok) throw new Error("Failed to fetch user")
 
-      localStorage.setItem("user", JSON.stringify(userData))
-      setUser(userData)
+        localStorage.setItem("user", JSON.stringify(userData))
+        setUser(userData)
 
-      router.push("/dashboard")
-      return true
+        router.push("/dashboard")
+        return true
+      }
+
+      return false
+    } catch (error) {
+      console.error("Login failed:", error)
+      return false
+    }
+    */
+
+    // New demo logic
+    const demoUser = {
+      email,
+      name: "Demo User",
+      preferences: {
+        notifications: true,
+        soundEffects: true,
+        autoStartBreaks: false,
+        autoStartPomodoros: false,
+      },
     }
 
-    return false
-  } catch (error) {
-    console.error("Login failed:", error)
-    return false
+    localStorage.setItem("token", "demo-token")
+    localStorage.setItem("user", JSON.stringify(demoUser))
+    setUser(demoUser)
+    router.push("/dashboard")
+    return true
   }
-}
-
 
   const signup = async (email: string, password: string, name: string) => {
+    // Commented out the old logic
+    /*
     try {
       const res = await signupUser({ email, password, name })
 
@@ -114,6 +136,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Signup failed (network):", error)
       return false
     }
+    */
+
+    // New demo logic
+    const demoUser = {
+      email,
+      name,
+      preferences: {
+        notifications: true,
+        soundEffects: true,
+        autoStartBreaks: false,
+        autoStartPomodoros: false,
+      },
+    }
+
+    localStorage.setItem("token", "demo-token")
+    localStorage.setItem("user", JSON.stringify(demoUser))
+    setUser(demoUser)
+    router.push("/dashboard")
+    return true
   }
 
   const logout = () => {
